@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>All digits of π in hex</title>
+        <script src="BigInt_BigRat.min.js"></script>
+        <script>
+            function* pi_digits() {
+                let x = bigRat(0);
+                let n = bigInt(1);
+                const digits = "0123456789abcdef";
+                while(true) {
+                    let p = bigRat(
+                        n.times(120).minus(89).times(n).plus(16),
+                        n.times(512).minus(1024).times(n).plus(712).times(n).minus(206).times(n).plus(21)
+                    );
+                    x = x.times(16).plus(p).mod(1);
+                    n = n.add(1);
+                    yield digits.charAt(x.times(16).floor().valueOf());
+                }
+            }
+
+            function* pi_digit_block(blocklen) {
+                let gen = pi_digits();
+                while(true) {
+                    yield Array(blocklen).fill().map(() => gen.next().value).join('');
+                }
+            }
+
+            const blocks = pi_digit_block(4);
+
+            function check_scroll() {
+                const elm = document.documentElement;
+                let content = document.getElementById('pi');
+                while(elm.clientHeight + elm.scrollTop + 400 > elm.offsetHeight) {
+                    content.innerHTML += blocks.next().value + ' ' + blocks.next().value + '<br>';
+                }
+            }
+
+            function init_div() {
+                window.onscroll = check_scroll;
+                check_scroll();
+            }
+        </script>
+        <style>
+            .pi {
+                width: 800px;
+                margin: 0 auto;
+                text-align: center;
+                font-size: 120px;
+                font-family: monospace;
+            }
+
+            #help {
+                position: fixed;
+                top: 25px;
+                left: 25px;
+                font-size: 10px;
+                color: #777;
+                font-family: "Helvetica", "Arial", sans-serif;
+                box-shadow: 5px 10px 5px #888888;
+                border-radius: 2px;
+                padding: 10px;
+                box-shadow: 0 4px 5px 0 rgba(0,0,0,0.14),0 1px 10px 0 rgba(0,0,0,0.12),0 2px 4px -1px rgba(0,0,0,0.2);
+                z-index: 2;
+            }
+
+            #help a {
+                color: #777;
+                text-decoration: none;
+            }
+        </style>
+    </head>
+    <body onload="init_div();">
+        <div id="help">
+            This page contains all the digits of <a href="https://en.wikipedia.org/wiki/Pi">π</a> in hexadecimal.<br><br>
+            Q: Really all of them?<br>
+            A: Yes, if your machine has enough memory.<br><br>
+            Q: Are they correct?<br>
+            A: Yes, <a href="https://archive.org/details/pi_hex_1b">check here</a>.
+        </div>
+        <div class="pi" id="pi">
+            3.<br>
+        </div>
+        <div class="pi">
+            .....
+        </div>
+    </body>
+</html>

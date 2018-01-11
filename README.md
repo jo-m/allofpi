@@ -1,0 +1,2 @@
+# Website showing all the digits of π
+Uses [BigRational](https://github.com/peterolson/BigRational.js/blob/master/README.md) and the [BBP](https://www.math.hmc.edu/funfacts/ffiles/20010.5.shtml) formula. 
